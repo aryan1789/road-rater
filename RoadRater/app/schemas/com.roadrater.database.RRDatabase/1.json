@@ -1,0 +1,58 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "7b14fbc6815d2947eadf7cf5ed6918b7",
+    "entities": [
+      {
+        "tableName": "CarEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`numberPlate` TEXT NOT NULL, `make` TEXT NOT NULL, `model` TEXT NOT NULL, `year` TEXT NOT NULL, `lastUpdates` INTEGER NOT NULL, PRIMARY KEY(`numberPlate`))",
+        "fields": [
+          {
+            "fieldPath": "numberPlate",
+            "columnName": "numberPlate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "make",
+            "columnName": "make",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "model",
+            "columnName": "model",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdates",
+            "columnName": "lastUpdates",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "numberPlate"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b14fbc6815d2947eadf7cf5ed6918b7')"
+    ]
+  }
+}
