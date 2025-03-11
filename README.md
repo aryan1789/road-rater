@@ -30,28 +30,8 @@
 - Internet connection for real-time updates
 
 ### Installation
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/yourusername/road-rater.git
-   ```
-2. Navigate to the project directory:
-   ```sh
-   cd road-rater
-   ```
-3. Install dependencies:
-   ```sh
-   npm install  # If using React Native
-   ```
-4. Run the app:
-   ```sh
-   npm start  # Or use Expo for mobile development
-   ```
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request with any improvements.
-
-## License
-This project is licensed under the MIT License. See `LICENSE` for details.
+// To do
 
 ## Contact
 For inquiries, reach out to **[Your Name]** at **your.email@example.com** or visit the [GitHub Issues](https://github.com/yourusername/road-rater/issues) page to report bugs and suggestions.
