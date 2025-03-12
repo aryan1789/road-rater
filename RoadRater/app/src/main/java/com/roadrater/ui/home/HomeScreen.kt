@@ -31,7 +31,6 @@ import com.roadrater.presentation.util.Tab
 import com.roadrater.ui.home.tabs.HomeTab
 import com.roadrater.ui.home.tabs.ProfileTab
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 import soup.compose.material.motion.animation.materialFadeThroughIn
 import soup.compose.material.motion.animation.materialFadeThroughOut
 
@@ -43,7 +42,6 @@ object HomeScreen : Screen() {
 
     @Composable
     override fun Content() {
-
         val tabs = buildList {
             add(HomeTab)
             add(ProfileTab)
@@ -83,7 +81,7 @@ object HomeScreen : Screen() {
                                     initialScale = 1f,
                                     durationMillis = TAB_FADE_DURATION,
                                 ) togetherWith
-                                        materialFadeThroughOut(durationMillis = TAB_FADE_DURATION)
+                                    materialFadeThroughOut(durationMillis = TAB_FADE_DURATION)
                             },
                             label = "tabContent",
                         ) {
@@ -103,7 +101,6 @@ object HomeScreen : Screen() {
                 }
             }
         }
-
     }
 
     @Composable

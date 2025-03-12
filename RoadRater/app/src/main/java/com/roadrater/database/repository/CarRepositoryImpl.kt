@@ -1,10 +1,9 @@
 package com.roadrater.database.repository
 
-import kotlinx.coroutines.flow.Flow
 import com.roadrater.database.RRDatabase
 import com.roadrater.database.entities.CarEntity
 import com.roadrater.domain.CarRepository
-
+import kotlinx.coroutines.flow.Flow
 
 class CarRepositoryImpl(
     private val database: RRDatabase,

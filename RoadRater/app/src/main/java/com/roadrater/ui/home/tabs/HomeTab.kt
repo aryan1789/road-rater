@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DirectionsCarFilled
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,12 +40,11 @@ object HomeTab : Tab {
 
         Scaffold(
             topBar = {},
-            floatingActionButton = {}
+            floatingActionButton = {},
         ) { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
                 Text("Home Tab")
             }
         }
     }
-
 }

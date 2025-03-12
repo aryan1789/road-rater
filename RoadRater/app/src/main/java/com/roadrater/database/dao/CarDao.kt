@@ -1,7 +1,6 @@
 package com.roadrater.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.roadrater.database.entities.CarEntity
@@ -20,5 +19,4 @@ interface CarDao {
 
     @Query("SELECT * FROM CarEntity WHERE numberPlate = :numberPlate LIMIT 1")
     fun getCarByNumberPlate(numberPlate: String): CarEntity
-
 }

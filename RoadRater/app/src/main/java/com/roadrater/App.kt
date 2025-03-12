@@ -4,8 +4,8 @@ import android.app.Application
 import com.roadrater.di.DatabaseModule
 import com.roadrater.di.PreferencesModule
 import com.roadrater.di.RepositoryModule
-import com.roadrater.presentation.crash.GlobalExceptionHandler
 import com.roadrater.presentation.crash.CrashActivity
+import com.roadrater.presentation.crash.GlobalExceptionHandler
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

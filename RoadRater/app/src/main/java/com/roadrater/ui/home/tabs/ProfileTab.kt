@@ -40,12 +40,11 @@ object ProfileTab : Tab {
 
         Scaffold(
             topBar = {},
-            floatingActionButton = {}
+            floatingActionButton = {},
         ) { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
                 Text("Profile Tab")
             }
         }
     }
-
 }
