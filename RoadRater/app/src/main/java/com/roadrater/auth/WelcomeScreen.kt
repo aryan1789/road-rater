@@ -12,7 +12,7 @@ import com.roadrater.presentation.Screen
 import org.koin.compose.koinInject
 
 class WelcomeScreen(
-    val state: SignInState,
+    val viewModel: SignInViewModel,
     val onSignInClick: () -> Unit,
 ) : Screen() {
 
@@ -28,27 +28,10 @@ class WelcomeScreen(
         val navigator = LocalNavigator.currentOrThrow
 
         val generalPreferences = koinInject<GeneralPreferences>()
-        val shownOnboardingFlow by generalPreferences.loggedIn.collectAsState()
-
-//        val screenModel = rememberScreenModel { SignInScreenModel() }
-//        val state by screenModel.state.collectAsStateWithLifecycle()
-//
-//        val launcher = rememberLauncherForActivityResult(
-//            contract = ActivityResultContracts.StartIntentSenderForResult(),
-//            onResult = { result ->
-//                if(result.resultCode == RESULT_OK) {
-//                    lifecycleScope.launch {
-//                        val signInResult = googleAuthUiClient.signInWithIntent(
-//                            intent = result.data ?: return@launch
-//                        )
-//                        screenModel.onSignInResult(signInResult)
-//                    }
-//                }
-//            }
-//        )
+        val shownOnboardingFlow by generalPreferences.onboardingComplete.collectAsState()
 
         val finishOnboarding: () -> Unit = {
-            generalPreferences.loggedIn.set(true)
+            generalPreferences.onboardingComplete.set(true)
             navigator.pop()
         }
 
@@ -60,7 +43,7 @@ class WelcomeScreen(
         )
 
         OnboardingScreen(
-            state = state,
+            viewModel = viewModel,
             onSignInClick = onSignInClick,
             onComplete = finishOnboarding,
 //            onRestoreBackup = {

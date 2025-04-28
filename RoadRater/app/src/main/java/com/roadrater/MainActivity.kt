@@ -11,10 +11,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -80,7 +80,6 @@ class MainActivity : ComponentActivity() {
         val navigator = LocalNavigator.currentOrThrow
 
         val viewModel = viewModel<SignInViewModel>()
-        val state by viewModel.state.collectAsStateWithLifecycle()
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -97,10 +96,10 @@ class MainActivity : ComponentActivity() {
         )
 
         LaunchedEffect(Unit) {
-            if (!generalPreferences.loggedIn.get() && navigator.lastItem !is WelcomeScreen) {
+            if (!generalPreferences.onboardingComplete.get() && navigator.lastItem !is WelcomeScreen) {
                 navigator.push(
                     WelcomeScreen(
-                        state = state,
+                        viewModel = viewModel,
                         onSignInClick = {
                             lifecycleScope.launch {
                                 val signInIntentSender = googleAuthUiClient.signIn()
