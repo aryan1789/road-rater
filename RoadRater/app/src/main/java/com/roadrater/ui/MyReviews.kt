@@ -34,6 +34,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
@@ -70,6 +74,9 @@ object MyReviews : Tab {
         val navigator = LocalNavigator.currentOrThrow
         //val screenModel = rememberScreenModel { HomeTabScreenModel() }
         val currentUser = GoogleAuthUiClient(context, Identity.getSignInClient(context)).getSignedInUser()
+        var selectedLabel by remember { mutableStateOf("All") }
+        val labels = listOf("All","Speeding","Safe","Reckless")
+
 
         Scaffold(
             topBar = {
@@ -108,6 +115,10 @@ object MyReviews : Tab {
                     )
                 )
 
+                val filteredReviews = reviews.filter { review ->
+                    selectedLabel == "All" || review.labels.contains(selectedLabel)
+                }
+
                 Text(
                     text = "My Reviews",
                     fontSize = 26.sp,
@@ -115,8 +126,26 @@ object MyReviews : Tab {
                     modifier = Modifier.padding(16.dp)
                 )
 
+                Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    labels.forEach { label ->
+                        Text(
+                            text = label,
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(
+                                    if (label == selectedLabel) Color.Magenta else Color.Gray
+                                )
+                                .clickable { selectedLabel = label }
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            color = Color.White,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+
                 LazyColumn {
-                    items(reviews) { review ->
+                    items(filteredReviews) { review ->
                         ReviewCard(review)
                     }
                 }
