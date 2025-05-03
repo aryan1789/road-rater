@@ -25,6 +25,7 @@ import com.roadrater.presentation.components.LogoHeader
 import com.roadrater.presentation.components.TextPreferenceWidget
 import com.roadrater.presentation.util.ScrollbarLazyColumn
 import com.roadrater.presentation.util.Tab
+import com.roadrater.ui.MyReviews
 
 object MoreTab : Tab {
     private fun readResolve(): Any = HomeTab
@@ -83,7 +84,7 @@ object MoreTab : Tab {
                     TextPreferenceWidget(
                         title = "My Reviews",
                         icon = Icons.Outlined.Storage,
-                        onPreferenceClick = { },
+                        onPreferenceClick = { navigator.push(MyReviews)},
                     )
                 }
 
