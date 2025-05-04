@@ -59,7 +59,11 @@ import com.roadrater.presentation.util.Tab
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.text.font.FontWeight
 
 
 object MyReviews : Tab {
@@ -150,7 +154,7 @@ object MyReviews : Tab {
                         Text(
                             text = label,
                             modifier = Modifier
-                                .padding(end = 8.dp)
+                                .padding(end = 15.dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(
                                     if (label == selectedLabel) Color.Magenta else Color.Gray
@@ -205,8 +209,7 @@ object MyReviews : Tab {
                         modifier = Modifier
                             .clickable { sortAsc = !sortAsc }
                             .border(1.dp,Color.Gray, RoundedCornerShape(6.dp))
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
-                            .background(color=Color.Blue),
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
                         color = Color.White
                     )
                 }
@@ -231,24 +234,27 @@ object MyReviews : Tab {
 
     @Composable
     fun ReviewCard(review: Review) {
-        Column(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .border(1.dp, Color.Gray, RoundedCornerShape(16.dp))
-                .padding(16.dp)
+                .padding(16.dp),
+           // colors = CardDefaults.cardColors(containerColor = Color.DarkGray),
+            //elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+
         ) {
             Row {
                 repeat(5) { index->
                     Icon(
-                        imageVector = Icons.Filled.Star,
+                        imageVector = if (index < review.stars) Icons.Filled.Star else Icons.Outlined.StarBorder,
                         contentDescription = "Star",
-                        tint = if (index<review.stars) Color.Yellow else Color.Gray,
                         modifier = Modifier.size(24.dp)
                     )
                 }
             }
-            Text(text = review.title, fontSize=20.sp,color = Color.LightGray)
+            Text(text = review.title, fontSize=20.sp, fontWeight = FontWeight.Bold, color = Color.LightGray)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = review.dateTime, fontSize = 14.sp, color = Color.LightGray)
 
