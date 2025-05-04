@@ -84,7 +84,7 @@ object MoreTab : Tab {
                     TextPreferenceWidget(
                         title = "My Reviews",
                         icon = Icons.Outlined.Storage,
-                        onPreferenceClick = { navigator.push(MyReviews)},
+                        onPreferenceClick = { navigator.push(MyReviews) },
                     )
                 }
 
