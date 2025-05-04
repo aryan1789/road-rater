@@ -29,6 +29,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.outlined.DirectionsCarFilled
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -56,6 +57,9 @@ import com.roadrater.R
 import com.roadrater.auth.GoogleAuthUiClient
 import com.roadrater.presentation.util.Tab
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.rounded.Star
 
 
 object MyReviews : Tab {
@@ -111,13 +115,15 @@ object MyReviews : Tab {
                         title = "Speeding on highway",
                         dateTime = "April 29, 2025 2:35 PM",
                         labels = listOf("Speeding"),
-                        description = "Saw the driver weaving through traffic at high speed with no indicators"
+                        description = "Saw the driver weaving through traffic at high speed with no indicators",
+                        stars = 2
                     ),
                     Review(
                         title = "Very polite driver",
                         dateTime = "April 30, 2025 9:12 AM",
                         labels = listOf("Safe"),
-                        description = "Driver allowed me to merge and maintained safe distance throughout."
+                        description = "Driver allowed me to merge and maintained safe distance throughout.",
+                        stars=5
                     )
                 )
 
@@ -219,7 +225,8 @@ object MyReviews : Tab {
         val title: String,
         val dateTime: String,
         val labels: List<String>,
-        val description: String
+        val description: String,
+        val stars: Int
     )
 
     @Composable
@@ -231,6 +238,16 @@ object MyReviews : Tab {
                 .border(1.dp, Color.Gray, RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
+            Row {
+                repeat(5) { index->
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "Star",
+                        tint = if (index<review.stars) Color.Yellow else Color.Gray,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
             Text(text = review.title, fontSize=20.sp,color = Color.LightGray)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = review.dateTime, fontSize = 14.sp, color = Color.LightGray)
@@ -252,6 +269,7 @@ object MyReviews : Tab {
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(review.description,color = Color.White, fontSize = 16.sp)
+
         }
     }
 
