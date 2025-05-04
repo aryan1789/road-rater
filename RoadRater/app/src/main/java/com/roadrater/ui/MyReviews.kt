@@ -30,6 +30,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DirectionsCarFilled
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
@@ -53,6 +55,8 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
 import com.roadrater.auth.GoogleAuthUiClient
 import com.roadrater.presentation.util.Tab
+import androidx.compose.foundation.layout.*
+
 
 object MyReviews : Tab {
     private fun readResolve(): Any = MyReviews
@@ -73,10 +77,12 @@ object MyReviews : Tab {
         val context = LocalContext.current
         val navigator = LocalNavigator.currentOrThrow
         //val screenModel = rememberScreenModel { HomeTabScreenModel() }
+        val labels = listOf("All","Speeding","Safe","Reckless")
         val currentUser = GoogleAuthUiClient(context, Identity.getSignInClient(context)).getSignedInUser()
         var selectedLabel by remember { mutableStateOf("All") }
-        val labels = listOf("All","Speeding","Safe","Reckless")
-
+        var expandedDropdown by remember { mutableStateOf(false) }
+        var sortOption by remember { mutableStateOf("Date") } // "Date" or "Title"
+        var sortAsc by remember { mutableStateOf(true) }
 
         Scaffold(
             topBar = {
@@ -117,6 +123,13 @@ object MyReviews : Tab {
 
                 val filteredReviews = reviews.filter { review ->
                     selectedLabel == "All" || review.labels.contains(selectedLabel)
+                }.let {
+                    when (sortOption) {
+                        "Title" -> if (sortAsc) it.sortedBy { review -> review.title }
+                                    else it.sortedByDescending { review -> review.title }
+                        else -> if (sortAsc) it.sortedBy { review -> review.dateTime }
+                                else it.sortedByDescending { review -> review.dateTime }
+                    }
                 }
 
                 Text(
@@ -142,6 +155,54 @@ object MyReviews : Tab {
                             fontSize = 14.sp
                         )
                     }
+                }
+
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical =8.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "Sort by: $sortOption",
+                            modifier = Modifier
+                                .clickable { expandedDropdown=true }
+                                .border(1.dp,Color.Gray, RoundedCornerShape(6.dp))
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            color = Color.White
+                        )
+
+                        DropdownMenu(
+                            expanded = expandedDropdown,
+                            onDismissRequest = { expandedDropdown = false}
+                        ) {
+                            DropdownMenuItem(
+                                text = {Text("Date")},
+                                onClick = {
+                                    sortOption = "Date"
+                                    expandedDropdown = false
+                                }
+                            )
+
+                            DropdownMenuItem(
+                                text = {Text("Title")},
+                                onClick = {
+                                    sortOption = "Title"
+                                    expandedDropdown = false
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(
+                        text = if (sortAsc) "Ascending" else "Descending",
+                        modifier = Modifier
+                            .clickable { sortAsc = !sortAsc }
+                            .border(1.dp,Color.Gray, RoundedCornerShape(6.dp))
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                            .background(color=Color.Blue),
+                        color = Color.White
+                    )
                 }
 
                 LazyColumn {
