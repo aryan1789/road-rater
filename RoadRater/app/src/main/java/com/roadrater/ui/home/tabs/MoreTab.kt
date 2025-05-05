@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreHoriz
@@ -26,6 +27,7 @@ import com.roadrater.presentation.components.TextPreferenceWidget
 import com.roadrater.presentation.util.ScrollbarLazyColumn
 import com.roadrater.presentation.util.Tab
 import com.roadrater.ui.MyReviews
+import com.roadrater.ui.Search
 
 object MoreTab : Tab {
     private fun readResolve(): Any = HomeTab
@@ -85,6 +87,13 @@ object MoreTab : Tab {
                         title = "My Reviews",
                         icon = Icons.Outlined.Storage,
                         onPreferenceClick = { navigator.push(MyReviews) },
+                    )
+                }
+                item {
+                    TextPreferenceWidget(
+                        title = "Search",
+                        icon = Icons.Filled.Search,
+                        onPreferenceClick = { navigator.push(Search) },
                     )
                 }
 

@@ -28,6 +28,7 @@ import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.roadrater.presentation.Screen
 import com.roadrater.presentation.util.Tab
+import com.roadrater.ui.Search
 import com.roadrater.ui.home.tabs.HomeTab
 import com.roadrater.ui.home.tabs.MoreTab
 import com.roadrater.ui.home.tabs.ProfileTab
@@ -47,6 +48,7 @@ object HomeScreen : Screen() {
             add(HomeTab)
             add(ProfileTab)
             add(MoreTab)
+            add(Search)
         }
 
         val navigator = LocalNavigator.currentOrThrow

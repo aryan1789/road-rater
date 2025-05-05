@@ -4,6 +4,7 @@
     //Tab Titles
     <string name="profile_tab">Profile</string>
     <string name="home_tab">Home</string>
+    <string name="search_tab">Search</string>
 
     //App Theme
     <string name="pref_appearance_darkmode_system">System</string>
