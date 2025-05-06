@@ -79,11 +79,15 @@ object Search : Tab {
             )
         }
 
+    @Composable
+    override fun Content() {
+        SearchSection()
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Content() {
-
+    fun SearchSection() {
         var expandedItem by remember { mutableStateOf<String?>(null) }
         var text by remember { mutableStateOf("") }
         var active by remember { mutableStateOf(false) }
@@ -172,7 +176,7 @@ object Search : Tab {
                         searchResults.forEach {
                             Row(modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { /* navigate or show detail */ }
+                                .clickable { navigator.push(CarDetail("QCF292")) }
                                 .padding(14.dp)
                             ) {
                                 Icon(
@@ -191,4 +195,4 @@ object Search : Tab {
             }
         }
     }
-}
+    }
