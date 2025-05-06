@@ -10,6 +10,7 @@
     <!-- Tab Titles -->
     <string name="profile_tab">Profile</string>
     <string name="home_tab">Home</string>
+    <string name="search_tab">Search</string>
     <string name="watched_cars">Watched Cars</string>
     <string name="stats">Stats</string>
     <string name="my_reviews">My Reviews</string>
@@ -55,6 +56,11 @@
     <string name="add_car_watchlist">Add Car to Watchlist</string>
     <string name="remove_car_dialog_title">Remove?</string>
     <string name="remove_car_dialog_body">Do you really want to remove %s from your watched list?</string>
+
+    <!-- Car Details -->
+    <string name="car_details">Car Details</string>
+    <string name="review_btn">Write a Review</string>
+    <string name="no_results">No results found</string>
 
 
 

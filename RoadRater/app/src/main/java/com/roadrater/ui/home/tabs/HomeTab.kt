@@ -27,6 +27,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
 import com.roadrater.auth.GoogleAuthUiClient
 import com.roadrater.presentation.util.Tab
+import com.roadrater.ui.Search.SearchSection
 
 object HomeTab : Tab {
     private fun readResolve(): Any = HomeTab
@@ -73,5 +74,6 @@ object HomeTab : Tab {
 //                Text("Home Tab")
             }
         }
+        SearchSection()
     }
 }
