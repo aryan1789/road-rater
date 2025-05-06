@@ -20,11 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.roadrater.R
 
 data class CarDetail(val plate: String) : Screen {
 
@@ -44,7 +46,7 @@ data class CarDetail(val plate: String) : Screen {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Car Details") },
+                    title = { Text(stringResource(id = R.string.car_details)) },
                 )
             },
         ) { innerPadding ->
@@ -110,7 +112,7 @@ data class CarDetail(val plate: String) : Screen {
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                 ) {
-                    Text("Write a Review")
+                    Text(stringResource(id = R.string.no_results))
                 } // search bar on home screen, reviews
             }
         }

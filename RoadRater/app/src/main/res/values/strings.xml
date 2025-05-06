@@ -6,7 +6,6 @@
     <string name="home_tab">Home</string>
     <string name="search_tab">Search</string>
 
-
     //App Theme
     <string name="pref_appearance_darkmode_system">System</string>
     <string name="pref_appearance_darkmode_light">Light</string>
@@ -27,6 +26,11 @@
     <string name="onboarding_action_next">Next</string>
     <string name="onboarding_action_finish">Get started</string>
     <string name="onboarding_action_skip">Skip</string>
+
+    <!-- Car Details -->
+    <string name="car_details">Car Details</string>
+    <string name="review_btn">Write a Review</string>
+    <string name="no_results">No results found</string>
 
     <string name="information_required_plain">*required</string>
 
