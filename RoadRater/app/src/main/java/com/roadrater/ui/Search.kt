@@ -1,22 +1,20 @@
 package com.roadrater.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.DirectionsCarFilled
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -24,46 +22,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import coil3.compose.AsyncImage
-import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
-import com.roadrater.auth.GoogleAuthUiClient
 import com.roadrater.presentation.util.Tab
-import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.filled.History
 import com.roadrater.ui.CarDetail
-
 
 object Search : Tab {
     private fun readResolve(): Any = Search
@@ -96,14 +63,15 @@ object Search : Tab {
                 "QGM3818",
                 "QCF292",
                 "MGH662",
-                "LLQ290"
+                "LLQ290",
             )
         }
         val allSearchItems = listOf("QGM3818", "QCF292", "MGH662", "LLQ290", "ABC123", "XYZ999")
         val searchResults = remember(text) {
             if (text.isNotBlank()) {
                 allSearchItems.filter {
-                    it.contains(text, ignoreCase = true) }
+                    it.contains(text, ignoreCase = true)
+                }
             } else {
                 emptyList()
             }
@@ -118,7 +86,7 @@ object Search : Tab {
                 },
                 onSearch = {
                     if (text.isNotBlank() && !items.contains(text)) {
-                        items.add(0,text)
+                        items.add(0, text)
                     }
                     active = false
                     text = ""
@@ -144,11 +112,11 @@ object Search : Tab {
                                 }
                             },
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close Icon"
+                            contentDescription = "Close Icon",
 
                         )
                     }
-                }
+                },
 
             ) {
                 if (text.isBlank()) {
@@ -157,11 +125,12 @@ object Search : Tab {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { navigator.push(CarDetail("QCF292")) }
-                                .padding(all = 14.dp)) {
+                                .padding(all = 14.dp),
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(end = 10.dp),
                                 imageVector = Icons.Default.History,
-                                contentDescription = "History Icon"
+                                contentDescription = "History Icon",
                             )
                             Text(text = it)
                         }
@@ -170,19 +139,20 @@ object Search : Tab {
                     if (searchResults.isEmpty()) {
                         Text(
                             text = "No results found",
-                            modifier = Modifier.padding(14.dp)
+                            modifier = Modifier.padding(14.dp),
                         )
                     } else {
                         searchResults.forEach {
-                            Row(modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { navigator.push(CarDetail("QCF292")) }
-                                .padding(14.dp)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { navigator.push(CarDetail("QCF292")) }
+                                    .padding(14.dp),
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.DirectionsCarFilled,
                                     contentDescription = "Car Icon",
-                                    modifier = Modifier.padding(end = 10.dp)
+                                    modifier = Modifier.padding(end = 10.dp),
                                 )
                                 Text(text = it)
                             }
@@ -190,9 +160,7 @@ object Search : Tab {
 //
                     }
                 }
-
-
             }
         }
     }
-    }
+}
