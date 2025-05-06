@@ -62,6 +62,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.filled.History
+import com.roadrater.ui.CarDetail
+
 
 object Search : Tab {
     private fun readResolve(): Any = Search
@@ -102,6 +104,7 @@ object Search : Tab {
                     emptyList()
             }
         }
+        val navigator = LocalNavigator.currentOrThrow
         Scaffold {
             SearchBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -149,7 +152,7 @@ object Search : Tab {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { text = it }
+                                .clickable { navigator.push(CarDetail("QCF292")) }
                                 .padding(all = 14.dp)) {
                             Icon(
                                 modifier = Modifier.padding(end = 10.dp),
