@@ -94,11 +94,15 @@ object Search : Tab {
             )
         }
 
+    @Composable
+    override fun Content() {
+        SearchSection()
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Content() {
-
+    fun SearchSection() {
         var expandedItem by remember { mutableStateOf<String?>(null) }
         var text by remember { mutableStateOf("") }
         var active by remember { mutableStateOf(false) }
@@ -206,4 +210,4 @@ object Search : Tab {
             }
         }
     }
-}
+    }
