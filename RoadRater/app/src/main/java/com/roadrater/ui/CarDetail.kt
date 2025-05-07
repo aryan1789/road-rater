@@ -1,5 +1,6 @@
 package com.roadrater.ui
 
+import android.app.appsearch.SearchResults
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,10 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DirectionsCarFilled
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,6 +24,19 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.roadrater.R
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.ListItem
+import com.roadrater.ui.home.tabs.HomeTab
+import cafe.adriel.voyager.navigator.Navigator
+
 
 data class CarDetail(val plate: String) : Screen {
 
@@ -49,6 +59,12 @@ data class CarDetail(val plate: String) : Screen {
                     title = { Text(stringResource(id = R.string.car_details)) },
                 )
             },
+            floatingActionButton = {
+                fabAdd(onClick =  {
+                    //navigator.push(AddReviews)
+                })
+            },
+            floatingActionButtonPosition = FabPosition.End
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -104,17 +120,32 @@ data class CarDetail(val plate: String) : Screen {
                     }
                 }
 
-                Button(
-                    onClick = {
-                        // navigator.push(WriteReview(plate)) - To add when its done
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                ) {
-                    Text(stringResource(id = R.string.no_results))
-                } // search bar on home screen, reviews
+//                Button(
+//                    onClick = {
+//                        // navigator.push(WriteReview(plate)) - To add when its done
+//                    },
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(top = 16.dp),
+//                ) {
+//                    Text(stringResource(id = R.string.review_btn))
+//                } // search bar on home screen, reviews
+
+            }
+
             }
         }
+    @Composable
+    fun fabAdd(onClick: () -> Unit,modifier: Modifier = Modifier) {
+            FloatingActionButton(
+                onClick = { onClick() },
+                modifier = modifier
+            ) {
+                Icon(Icons.Filled.Add, "Add review.")
+            }
+        }
+
+
     }
-}
+
+

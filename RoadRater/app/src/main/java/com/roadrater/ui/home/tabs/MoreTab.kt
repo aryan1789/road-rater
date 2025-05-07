@@ -46,7 +46,7 @@ object MoreTab : Tab {
     override fun Content() {
         val context = LocalContext.current
         val navigator = LocalNavigator.currentOrThrow
-        val screenModel = rememberScreenModel { HomeTabScreenModel() }
+//        val screenModel = rememberScreenModel { HomeTabScreenModel() }
 
         Scaffold(
             topBar = {
