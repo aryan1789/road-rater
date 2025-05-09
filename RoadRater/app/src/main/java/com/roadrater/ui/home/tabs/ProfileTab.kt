@@ -37,17 +37,19 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import coil3.compose.rememberAsyncImagePainter
 import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
-import com.roadrater.auth.GoogleAuthUiClient
 import com.roadrater.database.entities.Review
 import com.roadrater.database.entities.TableUser
 import com.roadrater.database.entities.WatchedCar
-import com.roadrater.presentation.util.Tab
 import com.roadrater.ui.theme.spacing
+import com.roadrater.auth.Auth
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import coil3.compose.AsyncImage
+import com.roadrater.preferences.GeneralPreferences
+import com.roadrater.presentation.util.Tab
 import org.koin.compose.koinInject
 
 object ProfileTab : Tab {
@@ -66,31 +68,31 @@ object ProfileTab : Tab {
 
     @Composable
     override fun Content() {
-        val context = LocalContext.current
         val supabaseClient = koinInject<SupabaseClient>()
-        val currentUser = GoogleAuthUiClient(context, Identity.getSignInClient(context)).getSignedInUser()
+        val generalPreferences = koinInject<GeneralPreferences>()
+        val currentUser = generalPreferences.user.get()
         val user = remember { mutableStateOf<TableUser?>(null) }
         val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
         val watchedCars = remember { mutableStateOf<List<WatchedCar>>(emptyList()) }
 
-        LaunchedEffect(currentUser?.userId) {
+        LaunchedEffect(currentUser?.uid) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     // Fetch user details
                     val userResult = supabaseClient.from("users")
-                        .select { filter { eq("uid", currentUser!!.userId) } }
+                        .select { filter { eq("uid", currentUser!!.uid) } }
                         .decodeSingleOrNull<TableUser>()
                     user.value = userResult
 
                     // Fetch user's reviews
                     val reviewsResult = supabaseClient.from("reviews")
-                        .select { filter { eq("created_by", currentUser!!.userId) } }
+                        .select { filter { eq("created_by", currentUser!!.uid) } }
                         .decodeList<Review>()
                     reviews.value = reviewsResult
 
                     // Fetch watched cars
                     val watchedCarsResult = supabaseClient.from("watched_cars")
-                        .select { filter { eq("uid", currentUser!!.userId) } }
+                        .select { filter { eq("uid", currentUser!!.uid) } }
                         .decodeList<WatchedCar>()
                     watchedCars.value = watchedCarsResult
                 } catch (e: Exception) {
@@ -114,7 +116,7 @@ object ProfileTab : Tab {
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    currentUser?.profilePictureUrl?.let { imageUrl ->
+                    currentUser?.profile_pic_url?.let { imageUrl ->
                         Image(
                             painter = rememberAsyncImagePainter(imageUrl),
                             contentDescription = "Profile picture",
@@ -127,7 +129,7 @@ object ProfileTab : Tab {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = user.value?.name ?: currentUser?.username ?: "Guest User",
+                        text = user.value?.name ?: currentUser?.nickname ?: "Guest User",
                         style = MaterialTheme.typography.headlineSmall,
                     )
 

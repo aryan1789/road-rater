@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import com.roadrater.R
+import com.roadrater.auth.steps.NicknameStep
+import com.roadrater.auth.steps.RegisterCarsStep
 import com.roadrater.preferences.GeneralPreferences
 import com.roadrater.ui.theme.spacing
 import org.koin.compose.koinInject
@@ -27,8 +29,6 @@ import soup.compose.material.motion.animation.rememberSlideDistance
 
 @Composable
 fun OnboardingScreen(
-    viewModel: SignInViewModel,
-    onSignInClick: () -> Unit,
     onComplete: () -> Unit,
 ) {
     val slideDistance = rememberSlideDistance()
@@ -36,7 +36,7 @@ fun OnboardingScreen(
     var currentStep by rememberSaveable { mutableIntStateOf(0) }
     val steps = remember {
         listOf(
-            LoginStep(viewModel, onSignInClick),
+            LoginStep(),
             NicknameStep(),
             RegisterCarsStep(),
         )
