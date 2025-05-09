@@ -9,4 +9,5 @@ data class TableUser(
     val name: String?,
     val nickname: String?,
     val email: String?,
+    val profilePictureUrl: String? = null,
 )

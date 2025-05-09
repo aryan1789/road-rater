@@ -2,6 +2,7 @@ package com.roadrater.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,6 +47,10 @@ import org.koin.compose.koinInject
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.clickable
+import coil3.compose.AsyncImage
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.width
 
 @Composable
 fun CarDetail(plate: String) {
@@ -177,17 +182,28 @@ fun CarDetail(plate: String) {
                     Text("No users linked to this car.")
                 } else {
                     watchedUsers.value.forEach { user ->
-                        Row(
+                        androidx.compose.material3.Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { navigator.push(UserProfileScreenScreen(user.uid)) }
                                 .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
-                                Text(text = user.name ?: "No Name", style = MaterialTheme.typography.bodyMedium)
-                                Text(text = user.nickname ?: "No Nickname", style = MaterialTheme.typography.bodySmall)
-                                Text(text = user.email ?: "No Email", style = MaterialTheme.typography.bodySmall)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                AsyncImage(
+                                    model = user.profilePictureUrl,
+                                    contentDescription = "User profile picture",
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .clip(CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column {
+                                    Text(text = user.name ?: "No Name", style = MaterialTheme.typography.bodyMedium)
+                                    Text(text = user.nickname ?: "No Nickname", style = MaterialTheme.typography.bodySmall)
+                                    Text(text = user.email ?: "No Email", style = MaterialTheme.typography.bodySmall)
+                                }
                             }
                         }
                     }

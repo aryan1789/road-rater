@@ -69,10 +69,8 @@ internal class LoginStep(
                     val email = user!!.email.toString()
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            val existingUsers = supabaseClient.postgrest["users"].select { filter { eq("uid", id) } }
-                            if (existingUsers.data.isEmpty() || existingUsers.data == "[]") {
-                                val response = supabaseClient.postgrest["users"].insert(TableUser(id, name, null, email))
-                            }
+                            // Always upsert the user with the latest profile picture URL
+                            supabaseClient.postgrest["users"].upsert(TableUser(id, name, null, email, user!!.profilePictureUrl))
                         } catch (e: Exception) {
                         }
                     }
