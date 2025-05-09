@@ -68,6 +68,7 @@ object MyReviews : Tab {
     override val options: TabOptions
         @Composable
         get() {
+            // Tab icon and label for the bottom navigation
             val image = rememberVectorPainter(Icons.Outlined.DirectionsCarFilled)
             return TabOptions(
                 index = 0u,
@@ -82,6 +83,7 @@ object MyReviews : Tab {
         val supabaseClient = koinInject<SupabaseClient>()
         val currentUser = Auth.getSignedInUser()
         val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
+        // List of labels for filtering reviews
         val labels = listOf("All", "Speeding", "Safe", "Reckless")
         var selectedLabel by remember { mutableStateOf("All") }
         var sortOption by remember { mutableStateOf("Date") } // "Date" or "Title"
@@ -96,6 +98,7 @@ object MyReviews : Tab {
             floatingActionButton = {},
         ) { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
+                // Load reviews for the current user from the database
                 LaunchedEffect(currentUser?.uid) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val reviewsResult = supabaseClient.from("reviews")
@@ -110,6 +113,7 @@ object MyReviews : Tab {
                     }
                 }
 
+                // Filter and sort reviews based on user selection
                 val filteredReviews = reviews.value.filter { review ->
                     selectedLabel == "All" || review.labels.contains(selectedLabel)
                 }.let {

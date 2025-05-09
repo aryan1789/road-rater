@@ -64,6 +64,7 @@ object ProfileTab : Tab {
 
     @Composable
     override fun Content() {
+        // Get user and database client from dependency injection
         val supabaseClient = koinInject<SupabaseClient>()
         val generalPreferences = koinInject<GeneralPreferences>()
         val currentUser = generalPreferences.user.get()
@@ -71,22 +72,23 @@ object ProfileTab : Tab {
         val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
         val watchedCars = remember { mutableStateOf<List<WatchedCar>>(emptyList()) }
 
+        // Load user info, reviews, and watched cars from the database
         LaunchedEffect(currentUser?.uid) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    // Fetch user details
+                    // Get user details from Supabase
                     val userResult = supabaseClient.from("users")
                         .select { filter { eq("uid", currentUser!!.uid) } }
                         .decodeSingleOrNull<TableUser>()
                     user.value = userResult
 
-                    // Fetch user's reviews
+                    // Get all reviews written by this user
                     val reviewsResult = supabaseClient.from("reviews")
                         .select { filter { eq("created_by", currentUser!!.uid) } }
                         .decodeList<Review>()
                     reviews.value = reviewsResult
 
-                    // Fetch watched cars
+                    // Get all cars this user is watching
                     val watchedCarsResult = supabaseClient.from("watched_cars")
                         .select { filter { eq("uid", currentUser!!.uid) } }
                         .decodeList<WatchedCar>()
@@ -104,7 +106,7 @@ object ProfileTab : Tab {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
         ) {
-            // Profile Section
+            // Show user profile info
             Card(
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -112,6 +114,7 @@ object ProfileTab : Tab {
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    // Show profile picture if available
                     currentUser?.profile_pic_url?.let { imageUrl ->
                         Image(
                             painter = rememberAsyncImagePainter(imageUrl),
@@ -124,11 +127,13 @@ object ProfileTab : Tab {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Show user's name or nickname
                     Text(
                         text = user.value?.name ?: currentUser?.nickname ?: "Guest User",
                         style = MaterialTheme.typography.headlineSmall,
                     )
 
+                    // Show nickname if available
                     if (user.value?.nickname != null) {
                         Text(
                             text = user.value?.nickname ?: "",
@@ -137,6 +142,7 @@ object ProfileTab : Tab {
                         )
                     }
 
+                    // Show email or 'Guest Account' if not signed in
                     Text(
                         text = currentUser?.email ?: "Guest Account",
                         style = MaterialTheme.typography.bodyMedium,
@@ -145,7 +151,7 @@ object ProfileTab : Tab {
                 }
             }
 
-            // Statistics Section
+            // Show some user stats
             Card(
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -162,16 +168,19 @@ object ProfileTab : Tab {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
+                        // Number of reviews
                         StatItem(
                             icon = Icons.Outlined.RateReview,
                             value = reviews.value.size.toString(),
                             label = "Reviews",
                         )
+                        // Number of watched cars
                         StatItem(
                             icon = Icons.Outlined.DirectionsCar,
                             value = watchedCars.value.size.toString(),
                             label = "Watched Cars",
                         )
+                        // Average rating given by user
                         StatItem(
                             icon = Icons.Outlined.Star,
                             value = if (reviews.value.isNotEmpty()) {
@@ -188,6 +197,7 @@ object ProfileTab : Tab {
     }
 }
 
+// Shows a single stat (like number of reviews)
 @Composable
 private fun StatItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
