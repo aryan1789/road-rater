@@ -49,10 +49,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
-import com.roadrater.auth.GoogleAuthUiClient
+import com.roadrater.auth.Auth
 import com.roadrater.database.entities.Review
+import com.roadrater.presentation.components.ReviewCard
 import com.roadrater.presentation.util.Tab
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -80,7 +80,7 @@ object MyReviews : Tab {
     override fun Content() {
         val context = LocalContext.current
         val supabaseClient = koinInject<SupabaseClient>()
-        val currentUser = GoogleAuthUiClient(context, Identity.getSignInClient(context)).getSignedInUser()
+        val currentUser = Auth.getSignedInUser()
         val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
         val labels = listOf("All", "Speeding", "Safe", "Reckless")
         var selectedLabel by remember { mutableStateOf("All") }
@@ -96,12 +96,12 @@ object MyReviews : Tab {
             floatingActionButton = {},
         ) { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
-                LaunchedEffect(currentUser?.userId) {
+                LaunchedEffect(currentUser?.uid) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val reviewsResult = supabaseClient.from("reviews")
                             .select {
                                 filter {
-                                    eq("created_by", currentUser!!.userId)
+                                    eq("created_by", currentUser!!.uid)
                                 }
                                 order("created_at", Order.DESCENDING)
                             }

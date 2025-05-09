@@ -1,33 +1,34 @@
 package com.roadrater
 
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
-import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.transitions.SlideTransition
+import com.roadrater.auth.Auth
 import com.roadrater.auth.WelcomeScreen
 import com.roadrater.preferences.GeneralPreferences
-import com.roadrater.preferences.preference.collectAsState
 import com.roadrater.presentation.components.preferences.TachiyomiTheme
 import com.roadrater.ui.home.HomeScreen
 import com.roadrater.utils.FirebaseConfig
 import org.koin.android.ext.android.inject
+import org.koin.java.KoinJavaComponent.inject
 
-class MainActivity : BaseActivity() {
+class MainActivity : ComponentActivity() {
     private val generalPreferences by inject<GeneralPreferences>()
 
+    private val auth by lazy {
+        Auth()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,8 +37,9 @@ class MainActivity : BaseActivity() {
         FirebaseConfig.setCrashlyticsEnabled(true)
 
         setContent {
-            val dark by appearancePreferences.themeMode.collectAsState()
             val isSystemInDarkTheme = isSystemInDarkTheme()
+            val onboardingComplete = generalPreferences.onboardingComplete.get()
+            val signedInUser = generalPreferences.user.get()
             val statusBarBackgroundColor = MaterialTheme.colorScheme.surface
 
             LaunchedEffect(isSystemInDarkTheme, statusBarBackgroundColor) {
@@ -50,27 +52,17 @@ class MainActivity : BaseActivity() {
                 )
             }
 
+            val initialScreen = if (onboardingComplete && signedInUser != null) {
+                HomeScreen
+            } else {
+                WelcomeScreen()
+            }
+
             TachiyomiTheme {
                 Navigator(
-                    screen = HomeScreen,
+                    screen = initialScreen,
                     disposeBehavior = NavigatorDisposeBehavior(disposeNestedNavigators = false, disposeSteps = true),
-                ) {
-                    SlideTransition(navigator = it)
-                    ShowOnboarding()
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun ShowOnboarding() {
-        val navigator = LocalNavigator.currentOrThrow
-
-        LaunchedEffect(Unit) {
-            if (!generalPreferences.onboardingComplete.get() && navigator.lastItem !is WelcomeScreen) {
-                navigator.push(
-                    WelcomeScreen(),
-                )
+                ) { SlideTransition(navigator = it) }
             }
         }
     }

@@ -157,6 +157,10 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.utils)
     implementation(libs.aboutLibraries.compose)
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+
+    implementation(libs.googleid)
 }
 
 spotless {
