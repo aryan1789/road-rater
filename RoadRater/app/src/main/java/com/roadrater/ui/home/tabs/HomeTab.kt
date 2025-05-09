@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.DirectionsCarFilled
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
@@ -26,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -45,7 +43,6 @@ import com.roadrater.database.entities.TableUser
 import com.roadrater.database.entities.WatchedCar
 import com.roadrater.presentation.util.Tab
 import com.roadrater.ui.CarDetailScreen
-import com.roadrater.ui.UserProfileScreenScreen
 import com.roadrater.utils.GetCarInfo
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -275,28 +272,6 @@ object HomeTab : Tab {
                                                 modifier = Modifier.padding(end = 10.dp),
                                             )
                                             Text(text = plate)
-                                        }
-                                        // Show linked users if any
-                                        val users = userResults[plate] ?: emptyList()
-                                        if (users.isNotEmpty()) {
-                                            Text("Linked Users:", style = MaterialTheme.typography.labelMedium)
-                                            users.forEach { user ->
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .clickable { navigator.push(UserProfileScreenScreen(user.uid)) }
-                                                        .padding(start = 24.dp, top = 4.dp, bottom = 4.dp),
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                ) {
-                                                    // If you have a profile picture URL, use AsyncImage here
-                                                    // AsyncImage(model = user.profilePictureUrl, ...)
-                                                    Column {
-                                                        Text(text = user.name ?: "No Name", style = MaterialTheme.typography.bodyMedium)
-                                                        Text(text = user.nickname ?: "No Nickname", style = MaterialTheme.typography.bodySmall)
-                                                        Text(text = user.email ?: "No Email", style = MaterialTheme.typography.bodySmall)
-                                                    }
-                                                }
-                                            }
                                         }
                                     }
                                 }

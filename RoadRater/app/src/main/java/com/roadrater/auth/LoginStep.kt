@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
-import com.roadrater.database.entities.TableUser
+import com.roadrater.database.entities.NicknamelessUser
 import com.roadrater.ui.theme.spacing
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
@@ -67,10 +67,10 @@ internal class LoginStep(
                     val id = user!!.userId
                     val name = user!!.username.toString()
                     val email = user!!.email.toString()
+                    val profilePic = user!!.profilePictureUrl
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            // Always upsert the user with the latest profile picture URL
-                            supabaseClient.postgrest["users"].upsert(TableUser(id, name, null, email, user!!.profilePictureUrl))
+                            supabaseClient.postgrest["users"].upsert(NicknamelessUser(id, name, email, profilePic))
                         } catch (e: Exception) {
                         }
                     }
