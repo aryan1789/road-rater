@@ -18,10 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,7 +30,8 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.roadrater.R
 import com.roadrater.database.entities.Car
 import com.roadrater.database.entities.Review
-import com.roadrater.ui.ReviewCard
+import com.roadrater.database.entities.TableUser
+import com.roadrater.database.entities.WatchedCar
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
@@ -43,7 +42,7 @@ import org.koin.compose.koinInject
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-data class CarDetail(val plate: String) : Screen {
+class CarDetailScreen(val plate: String) : Screen {
 
     @Composable
     override fun Content() {
@@ -51,7 +50,7 @@ data class CarDetail(val plate: String) : Screen {
         val supabaseClient = koinInject<SupabaseClient>()
         val car = remember { mutableStateOf<Car?>(null) }
         val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
-        var searchHistory by remember { mutableStateOf(listOf<String>()) }
+        val watchedUsers = remember { mutableStateOf<List<TableUser>>(emptyList()) }
 
         LaunchedEffect(plate) {
             CoroutineScope(Dispatchers.IO).launch {
@@ -94,8 +93,24 @@ data class CarDetail(val plate: String) : Screen {
                             )
                         }
                         reviews.value = reviewList
+
+                        // Fetch associated users
+                        val watchedRows = supabaseClient.from("watched_cars")
+                            .select { filter { ilike("number_plate", plate) } }
+                            .decodeList<WatchedCar>()
+                        val userIds = watchedRows.map { it.uid }
+                        val users = if (userIds.isNotEmpty()) {
+                            supabaseClient.from("users")
+                                .select()
+                                .decodeList<TableUser>()
+                                .filter { it.uid in userIds }
+                        } else {
+                            emptyList()
+                        }
+                        watchedUsers.value = users
                     } else {
                         reviews.value = emptyList()
+                        watchedUsers.value = emptyList()
                     }
                 } catch (e: Exception) {
                     println("Error fetching car details: ${e.message}")

@@ -19,6 +19,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,8 +39,10 @@ import coil3.compose.AsyncImage
 import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
 import com.roadrater.auth.GoogleAuthUiClient
+import com.roadrater.database.entities.TableUser
+import com.roadrater.database.entities.WatchedCar
 import com.roadrater.presentation.util.Tab
-import com.roadrater.ui.CarDetail
+import com.roadrater.ui.CarDetailScreen
 import com.roadrater.utils.GetCarInfo
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -76,6 +79,8 @@ object HomeTab : Tab {
         var text by remember { mutableStateOf("") }
         var active by remember { mutableStateOf(false) }
         var noResults by remember { mutableStateOf(false) }
+        var userResults by remember { mutableStateOf<Map<String, List<TableUser>>>(emptyMap()) }
+        var pendingNavigationPlate by remember { mutableStateOf<String?>(null) }
 
         Scaffold(
             topBar = {
@@ -140,8 +145,22 @@ object HomeTab : Tab {
                                             .decodeList<Map<String, String>>()
                                             .isNotEmpty()
                                         if (carExists) {
+                                            // Fetch linked users
+                                            val watchedUsers = supabaseClient.from("watched_cars")
+                                                .select { filter { eq("number_plate", upperText) } }
+                                                .decodeList<WatchedCar>()
+                                            val userIds = watchedUsers.map { it.uid }
+                                            val users = if (userIds.isNotEmpty()) {
+                                                supabaseClient.from("users")
+                                                    .select()
+                                                    .decodeList<TableUser>()
+                                                    .filter { it.uid in userIds }
+                                            } else {
+                                                emptyList()
+                                            }
+                                            userResults = userResults + (upperText to users)
                                             searchHistory = listOf(upperText) + searchHistory.filter { it != upperText }
-                                            navigator.push(CarDetail(upperText))
+                                            pendingNavigationPlate = upperText
                                             active = false
                                             text = ""
                                             noResults = false
@@ -156,7 +175,7 @@ object HomeTab : Tab {
                                                 // Insert into Supabase
                                                 supabaseClient.from("cars").insert(scrapedCar)
                                                 searchHistory = listOf(upperText) + searchHistory.filter { it != upperText }
-                                                navigator.push(CarDetail(upperText))
+                                                pendingNavigationPlate = upperText
                                                 active = false
                                                 text = ""
                                                 noResults = false
@@ -209,7 +228,7 @@ object HomeTab : Tab {
                                             .fillMaxWidth()
                                             .clickable {
                                                 searchHistory = listOf(plate) + searchHistory.filter { it != plate }
-                                                navigator.push(CarDetail(plate))
+                                                navigator.push(CarDetailScreen(plate))
                                                 text = ""
                                                 active = false
                                             }
@@ -232,27 +251,38 @@ object HomeTab : Tab {
                                 )
                             } else {
                                 searchResults.forEach { plate ->
-                                    Row(
+                                    Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .clickable {
-                                                searchHistory = listOf(plate) + searchHistory.filter { it != plate }
-                                                navigator.push(CarDetail(plate))
-                                                text = ""
-                                                active = false
-                                            }
                                             .padding(14.dp),
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.DirectionsCarFilled,
-                                            contentDescription = "Car Icon",
-                                            modifier = Modifier.padding(end = 10.dp),
-                                        )
-                                        Text(text = plate)
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    searchHistory = listOf(plate) + searchHistory.filter { it != plate }
+                                                    navigator.push(CarDetailScreen(plate))
+                                                    text = ""
+                                                    active = false
+                                                },
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.DirectionsCarFilled,
+                                                contentDescription = "Car Icon",
+                                                modifier = Modifier.padding(end = 10.dp),
+                                            )
+                                            Text(text = plate)
+                                        }
                                     }
                                 }
                             }
                         }
+                    }
+                }
+                LaunchedEffect(pendingNavigationPlate) {
+                    pendingNavigationPlate?.let { plate ->
+                        navigator.push(CarDetailScreen(plate))
+                        pendingNavigationPlate = null
                     }
                 }
             }
