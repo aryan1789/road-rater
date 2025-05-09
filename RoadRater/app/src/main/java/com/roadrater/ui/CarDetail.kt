@@ -1,6 +1,7 @@
 package com.roadrater.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,8 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.roadrater.R
 import com.roadrater.database.entities.Car
 import com.roadrater.database.entities.Review
+import com.roadrater.database.entities.TableUser
+import com.roadrater.database.entities.WatchedCar
 import com.roadrater.ui.ReviewCard
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -42,141 +45,183 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.foundation.clickable
 
-data class CarDetail(val plate: String) : Screen {
+@Composable
+fun CarDetail(plate: String) {
+    val navigator = LocalNavigator.currentOrThrow
+    val supabaseClient = koinInject<SupabaseClient>()
+    val car = remember { mutableStateOf<Car?>(null) }
+    val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
+    var searchHistory by remember { mutableStateOf(listOf<String>()) }
+    val watchedUsers = remember { mutableStateOf<List<TableUser>>(emptyList()) }
 
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        val supabaseClient = koinInject<SupabaseClient>()
-        val car = remember { mutableStateOf<Car?>(null) }
-        val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
-        var searchHistory by remember { mutableStateOf(listOf<String>()) }
+    LaunchedEffect(plate) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Fetch car details (case-insensitive)
+                val carResult = supabaseClient.from("cars")
+                    .select {
+                        filter {
+                            ilike("number_plate", plate)
+                        }
+                    }
+                    .decodeSingleOrNull<Car>()
+                car.value = carResult
 
-        LaunchedEffect(plate) {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    // Fetch car details (case-insensitive)
-                    val carResult = supabaseClient.from("cars")
+                if (carResult != null) {
+                    // Fetch reviews from 'reviews' table (case-insensitive)
+                    val reviewsResult = supabaseClient.from("reviews")
                         .select {
                             filter {
                                 ilike("number_plate", plate)
                             }
+                            order("created_at", Order.DESCENDING)
                         }
-                        .decodeSingleOrNull<Car>()
-                    car.value = carResult
-
-                    if (carResult != null) {
-                        // Fetch reviews from 'reviews' table (case-insensitive)
-                        val reviewsResult = supabaseClient.from("reviews")
-                            .select {
-                                filter {
-                                    ilike("number_plate", plate)
-                                }
-                                order("created_at", Order.DESCENDING)
-                            }
-                            .decodeList<Review>()
-                        val reviewList = reviewsResult.map { review ->
-                            val dateTime = try {
-                                val odt = OffsetDateTime.parse(review.createdAt)
-                                odt.format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"))
-                            } catch (e: Exception) {
-                                ""
-                            }
-                            Review(
-                                title = review.title,
-                                createdAt = dateTime,
-                                labels = review.labels ?: emptyList(),
-                                description = review.description,
-                                rating = review.rating,
-                                createdBy = review.createdBy,
-                                numberPlate = review.numberPlate,
-                            )
+                        .decodeList<Review>()
+                    val reviewList = reviewsResult.map { review ->
+                        val dateTime = try {
+                            val odt = OffsetDateTime.parse(review.createdAt)
+                            odt.format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"))
+                        } catch (e: Exception) {
+                            ""
                         }
-                        reviews.value = reviewList
-                    } else {
-                        reviews.value = emptyList()
+                        Review(
+                            title = review.title,
+                            createdAt = dateTime,
+                            labels = review.labels ?: emptyList(),
+                            description = review.description,
+                            rating = review.rating,
+                            createdBy = review.createdBy,
+                            numberPlate = review.numberPlate,
+                        )
                     }
-                } catch (e: Exception) {
-                    println("Error fetching car details: ${e.message}")
+                    reviews.value = reviewList
+
+                    // Fetch associated users
+                    val watchedRows = supabaseClient.from("watched_cars")
+                        .select { filter { ilike("number_plate", plate) } }
+                        .decodeList<WatchedCar>()
+                    val userIds = watchedRows.map { it.uid }
+                    val users = if (userIds.isNotEmpty()) {
+                        supabaseClient.from("users")
+                            .select()
+                            .decodeList<TableUser>()
+                            .filter { it.uid in userIds }
+                    } else emptyList()
+                    watchedUsers.value = users
+                } else {
+                    reviews.value = emptyList()
+                    watchedUsers.value = emptyList()
                 }
+            } catch (e: Exception) {
+                println("Error fetching car details: ${e.message}")
             }
         }
+    }
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(id = R.string.car_details)) },
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        // TODO: Navigate to add review screen
-                    },
-                ) {
-                    Icon(Icons.Filled.Add, "Add review")
-                }
-            },
-        ) { innerPadding ->
-            if (car.value == null) {
-                Text("Car not found.", modifier = Modifier.padding(16.dp))
-            } else {
-                Column(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(id = R.string.car_details)) },
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    // TODO: Navigate to add review screen
+                },
+            ) {
+                Icon(Icons.Filled.Add, "Add review")
+            }
+        },
+    ) { innerPadding ->
+        if (car.value == null) {
+            Text("Car not found.", modifier = Modifier.padding(16.dp))
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.DirectionsCarFilled,
+                    contentDescription = "Car Icon",
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.DirectionsCarFilled,
-                        contentDescription = "Car Icon",
-                        modifier = Modifier
-                            .size(64.dp)
-                            .padding(bottom = 16.dp),
-                    )
+                        .size(64.dp)
+                        .padding(bottom = 16.dp),
+                )
 
-                    Text(
-                        text = plate.uppercase(),
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
+                Text(
+                    text = plate.uppercase(),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
 
-                    Text(
-                        text = "${car.value?.make ?: ""} ${car.value?.model ?: ""}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
-                    )
+                Text(
+                    text = "${car.value?.make ?: ""} ${car.value?.model ?: ""}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
+                )
 
-                    Text(
-                        text = car.value?.year ?: "",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(bottom = 20.dp),
-                    )
+                Text(
+                    text = car.value?.year ?: "",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(bottom = 20.dp),
+                )
 
-                    Text(
-                        text = "Reviews",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(bottom = 8.dp),
-                    )
-
-                    if (reviews.value.isEmpty()) {
-                        Text("No reviews yet.", modifier = Modifier.padding(16.dp))
-                    } else {
-                        LazyColumn(
+                // Associated Users Section
+                Text("Associated Users:", style = MaterialTheme.typography.titleMedium)
+                if (watchedUsers.value.isEmpty()) {
+                    Text("No users linked to this car.")
+                } else {
+                    watchedUsers.value.forEach { user ->
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .clickable { navigator.push(UserProfileScreenScreen(user.uid)) }
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            items(reviews.value) { review ->
-                                ReviewCard(review)
+                            Column {
+                                Text(text = user.name ?: "No Name", style = MaterialTheme.typography.bodyMedium)
+                                Text(text = user.nickname ?: "No Nickname", style = MaterialTheme.typography.bodySmall)
+                                Text(text = user.email ?: "No Email", style = MaterialTheme.typography.bodySmall)
                             }
+                        }
+                    }
+                }
+
+                Text(
+                    text = "Reviews",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(bottom = 8.dp),
+                )
+
+                if (reviews.value.isEmpty()) {
+                    Text("No reviews yet.", modifier = Modifier.padding(16.dp))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                    ) {
+                        items(reviews.value) { review ->
+                            ReviewCard(review)
                         }
                     }
                 }
             }
         }
+    }
+}
+
+data class CarDetailScreen(val plate: String) : Screen {
+    @Composable
+    override fun Content() {
+        CarDetail(plate)
     }
 }
