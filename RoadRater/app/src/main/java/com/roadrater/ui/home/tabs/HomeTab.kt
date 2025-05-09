@@ -41,11 +41,11 @@ import coil3.compose.AsyncImage
 import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
 import com.roadrater.auth.GoogleAuthUiClient
+import com.roadrater.database.entities.TableUser
+import com.roadrater.database.entities.WatchedCar
 import com.roadrater.presentation.util.Tab
 import com.roadrater.ui.CarDetailScreen
 import com.roadrater.ui.UserProfileScreenScreen
-import com.roadrater.database.entities.TableUser
-import com.roadrater.database.entities.WatchedCar
 import com.roadrater.utils.GetCarInfo
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -158,7 +158,9 @@ object HomeTab : Tab {
                                                     .select()
                                                     .decodeList<TableUser>()
                                                     .filter { it.uid in userIds }
-                                            } else emptyList()
+                                            } else {
+                                                emptyList()
+                                            }
                                             userResults = userResults + (upperText to users)
                                             searchHistory = listOf(upperText) + searchHistory.filter { it != upperText }
                                             pendingNavigationPlate = upperText
@@ -255,7 +257,7 @@ object HomeTab : Tab {
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(14.dp)
+                                            .padding(14.dp),
                                     ) {
                                         Row(
                                             modifier = Modifier
@@ -284,7 +286,7 @@ object HomeTab : Tab {
                                                         .fillMaxWidth()
                                                         .clickable { navigator.push(UserProfileScreenScreen(user.uid)) }
                                                         .padding(start = 24.dp, top = 4.dp, bottom = 4.dp),
-                                                    verticalAlignment = Alignment.CenterVertically
+                                                    verticalAlignment = Alignment.CenterVertically,
                                                 ) {
                                                     // If you have a profile picture URL, use AsyncImage here
                                                     // AsyncImage(model = user.profilePictureUrl, ...)
