@@ -30,26 +30,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import coil3.compose.rememberAsyncImagePainter
-import com.google.android.gms.auth.api.identity.Identity
 import com.roadrater.R
 import com.roadrater.database.entities.Review
 import com.roadrater.database.entities.TableUser
 import com.roadrater.database.entities.WatchedCar
+import com.roadrater.preferences.GeneralPreferences
+import com.roadrater.presentation.util.Tab
 import com.roadrater.ui.theme.spacing
-import com.roadrater.auth.Auth
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import coil3.compose.AsyncImage
-import com.roadrater.preferences.GeneralPreferences
-import com.roadrater.presentation.util.Tab
 import org.koin.compose.koinInject
 
 object ProfileTab : Tab {
