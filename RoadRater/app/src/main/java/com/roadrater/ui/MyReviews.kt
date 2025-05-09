@@ -115,7 +115,7 @@ object MyReviews : Tab {
 
                 // Filter and sort reviews based on user selection
                 val filteredReviews = reviews.value.filter { review ->
-                    selectedLabel == "All" || review.labels.contains(selectedLabel)
+                    selectedLabel == "All" || (review.labels ?: emptyList()).contains(selectedLabel)
                 }.let {
                     when (sortOption) {
                         "Title" -> if (sortAsc) {
