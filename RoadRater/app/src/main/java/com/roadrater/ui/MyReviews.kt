@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.DirectionsCarFilled
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material.icons.rounded.Star
@@ -44,16 +43,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.roadrater.R
-import com.roadrater.auth.Auth
 import com.roadrater.database.entities.Review
+import com.roadrater.preferences.GeneralPreferences
+import com.roadrater.presentation.Screen
 import com.roadrater.presentation.components.ReviewCard
-import com.roadrater.presentation.util.Tab
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
@@ -62,7 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
-object MyReviews : Tab {
+object MyReviews : Screen() {
     private fun readResolve(): Any = MyReviews
 
     override val options: TabOptions
@@ -81,7 +76,8 @@ object MyReviews : Tab {
     override fun Content() {
         val context = LocalContext.current
         val supabaseClient = koinInject<SupabaseClient>()
-        val currentUser = Auth.getSignedInUser()
+        val generalPreferences = koinInject<GeneralPreferences>()
+        val currentUser = generalPreferences.user.get()
         val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
         // List of labels for filtering reviews
         val labels = listOf("All", "Speeding", "Safe", "Reckless")
