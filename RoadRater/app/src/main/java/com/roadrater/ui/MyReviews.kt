@@ -67,6 +67,7 @@ object MyReviews : Screen() {
         val generalPreferences = koinInject<GeneralPreferences>()
         val currentUser = generalPreferences.user.get()
         val reviews = remember { mutableStateOf<List<Review>>(emptyList()) }
+        // List of labels for filtering reviews
         val labels = listOf("All", "Speeding", "Safe", "Reckless")
         var selectedLabel by remember { mutableStateOf("All") }
         var sortOption by remember { mutableStateOf("Date") } // "Date" or "Title"
@@ -81,6 +82,7 @@ object MyReviews : Screen() {
             floatingActionButton = {},
         ) { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
+                // Load reviews for the current user from the database
                 LaunchedEffect(currentUser?.uid) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val reviewsResult = supabaseClient.from("reviews")
@@ -95,6 +97,7 @@ object MyReviews : Screen() {
                     }
                 }
 
+                // Filter and sort reviews based on user selection
                 val filteredReviews = reviews.value.filter { review ->
                     selectedLabel == "All" || (review.labels ?: emptyList()).contains(selectedLabel)
                 }.let {
