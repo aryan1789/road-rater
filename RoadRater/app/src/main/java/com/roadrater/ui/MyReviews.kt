@@ -60,18 +60,6 @@ import org.koin.compose.koinInject
 object MyReviews : Screen() {
     private fun readResolve(): Any = MyReviews
 
-    override val options: TabOptions
-        @Composable
-        get() {
-            // Tab icon and label for the bottom navigation
-            val image = rememberVectorPainter(Icons.Outlined.DirectionsCarFilled)
-            return TabOptions(
-                index = 0u,
-                title = stringResource(R.string.home_tab),
-                icon = image,
-            )
-        }
-
     @Composable
     override fun Content() {
         val context = LocalContext.current
