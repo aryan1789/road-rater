@@ -46,7 +46,7 @@ import com.roadrater.database.entities.WatchedCar
 import com.roadrater.preferences.GeneralPreferences
 import com.roadrater.presentation.components.ReviewCard
 import com.roadrater.presentation.util.Tab
-import com.roadrater.ui.CarDetailScreen
+import com.roadrater.ui.CarDetailsScreen
 import com.roadrater.utils.GetCarInfo
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -212,7 +212,7 @@ object HomeTab : Tab {
                             active = it
                         },
                         placeholder = {
-                            Text(text = "Search")
+                            Text(stringResource(R.string.search_tab))
                         },
                         leadingIcon = {
                             Icon(
@@ -238,7 +238,7 @@ object HomeTab : Tab {
                     ) {
                         if (text.isBlank()) {
                             if (searchHistory.isEmpty()) {
-                                Text("No search history yet", modifier = Modifier.padding(14.dp))
+                                Text(stringResource(R.string.search_no_history), modifier = Modifier.padding(14.dp))
                             } else {
                                 // Show previous search history
                                 searchHistory.forEach { plate ->
@@ -247,7 +247,7 @@ object HomeTab : Tab {
                                             .fillMaxWidth()
                                             .clickable {
                                                 searchHistory = listOf(plate) + searchHistory.filter { it != plate }
-                                                navigator.push(CarDetailScreen(plate))
+                                                navigator.push(CarDetailsScreen(plate))
                                                 text = ""
                                                 active = false
                                             }
@@ -265,7 +265,7 @@ object HomeTab : Tab {
                         } else {
                             if (noResults || searchResults.isEmpty()) {
                                 Text(
-                                    text = "No results found",
+                                    text = stringResource(R.string.no_results),
                                     modifier = Modifier.padding(14.dp),
                                 )
                             } else {
@@ -281,7 +281,7 @@ object HomeTab : Tab {
                                                 .fillMaxWidth()
                                                 .clickable {
                                                     searchHistory = listOf(plate) + searchHistory.filter { it != plate }
-                                                    navigator.push(CarDetailScreen(plate))
+                                                    navigator.push(CarDetailsScreen(plate))
                                                     text = ""
                                                     active = false
                                                 },
@@ -308,7 +308,7 @@ object HomeTab : Tab {
                 // Navigate to car detail screen if needed
                 LaunchedEffect(pendingNavigationPlate) {
                     pendingNavigationPlate?.let { plate ->
-                        navigator.push(CarDetailScreen(plate))
+                        navigator.push(CarDetailsScreen(plate))
                         pendingNavigationPlate = null
                     }
                 }
